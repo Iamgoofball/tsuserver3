@@ -89,8 +89,8 @@ class AreaManager:
 
         def send_command(self, cmd, *args):
             for c in self.clients:
-				if not c.version_checker(2, 5, 1, 0): # Reverse isn't supported before 2.5.1 and therefore is stripped from the message for clients on older builds.
-					del *args[15]
+                if not c.version_checker(2, 5, 1, 0): # Reverse isn't supported before 2.5.1 and therefore is stripped from the message for clients on older builds.
+                    del *args[15]
                 c.send_command(cmd, *args)
 
         def send_host_message(self, msg):

@@ -178,7 +178,7 @@ class AOProtocol(asyncio.Protocol):
         logger.log_server('Connected. HDID: {}.'.format(self.client.hdid), self.client)
         self.client.send_command('ID', self.client.id, self.server.software, self.server.get_version_string())
         self.client.send_command('PN', self.server.get_player_count() - 1, self.server.config['playerlimit'])
-		
+        
     def net_cmd_id(self, args):
         """ Client version and PV
 
@@ -198,15 +198,15 @@ class AOProtocol(asyncio.Protocol):
         major = int(version_list[1])
         minor = int(version_list[2])
 
-		self.client.version = version_list
+        self.client.version = version_list
         if args[0] != 'AO2':
             return
-		if self.client.version_checker(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
-			default_features = {'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption',
-								'deskmod', 'evidence'}
-			features = default_features.union(self.server.features)
+        if self.client.version_checker(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
+            default_features = {'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption',
+                                'deskmod', 'evidence'}
+            features = default_features.union(self.server.features)
 
-			self.client.send_command('FL', *features)
+            self.client.send_command('FL', *features)
 
     def net_cmd_ch(self, _):
         """ Periodically checks the connection.
@@ -327,41 +327,41 @@ class AOProtocol(asyncio.Protocol):
             return
         if not self.client.area.can_send_message(self.client):
             return
-		client_has_reverse_support = self.client.version_checker(2, 5, 1, 0) # Reverse added in 2.5.1, verify they have it before passing it on.
-		if client_has_reverse_support:
-			if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
-										 self.ArgType.STR,
-										 self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
-										 self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
-										 self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
-				return
-		else:
-			if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
-										 self.ArgType.STR,
-										 self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
-										 self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
-										 self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
-				return
+        client_has_reverse_support = self.client.version_checker(2, 5, 1, 0) # Reverse added in 2.5.1, verify they have it before passing it on.
+        if client_has_reverse_support:
+            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                         self.ArgType.STR,
+                                         self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
+                return
+        else:
+            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                         self.ArgType.STR,
+                                         self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
+                return
         msg_type = args[0] 
-		pre = args[1] 
-		folder = args[2] 
-		anim = args[3] 
-		text = args[4] 
-		pos = args[5] 
-		sfx = args[6]
-		anim_type = args[7] 
-		cid = args[8] 
-		sfx_delay = args[9]
-		button = args[10]
-		evidence = args[11]
-		flip = args[12] 
-		ding = args[13] 
-		color = args[14]
-		reverse = None
-		if client_has_reverse_support:
-			reverse = args[15]
-			
-		
+        pre = args[1] 
+        folder = args[2] 
+        anim = args[3] 
+        text = args[4] 
+        pos = args[5] 
+        sfx = args[6]
+        anim_type = args[7] 
+        cid = args[8] 
+        sfx_delay = args[9]
+        button = args[10]
+        evidence = args[11]
+        flip = args[12] 
+        ding = args[13] 
+        color = args[14]
+        reverse = None
+        if client_has_reverse_support:
+            reverse = args[15]
+            
+        
         if self.client.area.is_iniswap(self.client, pre, anim, folder) and folder != self.client.get_char_name():
             self.client.send_host_message("Iniswap is blocked in this area")
             return
@@ -369,7 +369,7 @@ class AOProtocol(asyncio.Protocol):
             return
         if anim_type not in (0, 1, 2, 5, 6):
             return
-			
+            
         if cid != self.client.char_id:
             return
         if sfx_delay < 0:
@@ -407,7 +407,7 @@ class AOProtocol(asyncio.Protocol):
             if self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos != 'all':
                 self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos = 'all'
                 self.client.area.broadcast_evidence_list()
-		
+        
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
                                       sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, reverse)
         self.client.area.set_next_msg_delay(len(msg))

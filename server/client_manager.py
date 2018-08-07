@@ -68,7 +68,7 @@ class ClientManager:
             self.wtce_mute_time = 0
             self.wtce_time = [x * self.server.config['wtce_floodguard']['interval_length'] for x in
                               range(self.server.config['wtce_floodguard']['times_per_interval'])]
-							  
+                              
         def send_raw_message(self, msg):
             if self.websocket:
                 self.websocket.send_text(msg.encode('utf-8'))
@@ -440,28 +440,28 @@ class ClientManager:
                 clients.append(client)
         return clients
 
-	def version_checker(self, req_release, req_major, req_minor, exact):
-		if len(self.version) < 3:
-			return 0
-		if req_release:
-			if exact:
-				if self.version[0] != req_release:
-					return 0
-			else:
-				if self.version[0] < req_release:
-					return 0
-			if req_major:
-				if exact:
-					if self.version[1] != req_major:
-						return 0
-				else:
-					if self.version[1] < req_major:
-						return 0
-				if req_minor:
-					if exact:
-						if self.version[2] != req_minor:
-							return 0
-					else:
-						if self.version[2] < req_minor:
-							return 0
-		return 1
+    def version_checker(self, req_release, req_major, req_minor, exact):
+        if len(self.version) < 3:
+            return 0
+        if req_release:
+            if exact:
+                if self.version[0] != req_release:
+                    return 0
+            else:
+                if self.version[0] < req_release:
+                    return 0
+            if req_major:
+                if exact:
+                    if self.version[1] != req_major:
+                        return 0
+                else:
+                    if self.version[1] < req_major:
+                        return 0
+                if req_minor:
+                    if exact:
+                        if self.version[2] != req_minor:
+                            return 0
+                    else:
+                        if self.version[2] < req_minor:
+                            return 0
+        return 1
