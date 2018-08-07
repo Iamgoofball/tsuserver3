@@ -316,7 +316,7 @@ class AOProtocol(asyncio.Protocol):
         except ClientError:
             return
 
-    def net_cmd_ms(self, args):
+     def net_cmd_ms(self, args):
         """ IC message.
 
         Refer to the implementation for details.
@@ -327,41 +327,13 @@ class AOProtocol(asyncio.Protocol):
             return
         if not self.client.area.can_send_message(self.client):
             return
-        client_has_reverse_support = self.client.version_checker(2, 5, 1, 0) # Reverse added in 2.5.1, verify they have it before passing it on.
-        if client_has_reverse_support:
-            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
-                                         self.ArgType.STR,
-                                         self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
-                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
-                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
-                return
-        else:
-            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
-                                         self.ArgType.STR,
-                                         self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
-                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
-                                         self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
-                return
-        msg_type = args[0] 
-        pre = args[1] 
-        folder = args[2] 
-        anim = args[3] 
-        text = args[4] 
-        pos = args[5] 
-        sfx = args[6]
-        anim_type = args[7] 
-        cid = args[8] 
-        sfx_delay = args[9]
-        button = args[10]
-        evidence = args[11]
-        flip = args[12] 
-        ding = args[13] 
-        color = args[14]
-        reverse = None
-        if client_has_reverse_support:
-            reverse = args[15]
-            
-        
+        if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                     self.ArgType.STR,
+                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
+            return
+        msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
         if self.client.area.is_iniswap(self.client, pre, anim, folder) and folder != self.client.get_char_name():
             self.client.send_host_message("Iniswap is blocked in this area")
             return
@@ -369,7 +341,6 @@ class AOProtocol(asyncio.Protocol):
             return
         if anim_type not in (0, 1, 2, 5, 6):
             return
-            
         if cid != self.client.char_id:
             return
         if sfx_delay < 0:
@@ -407,9 +378,8 @@ class AOProtocol(asyncio.Protocol):
             if self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos != 'all':
                 self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos = 'all'
                 self.client.area.broadcast_evidence_list()
-        
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
-                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, reverse)
+                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color)
         self.client.area.set_next_msg_delay(len(msg))
         logger.log_server('[IC][{}][{}]{}'.format(self.client.area.id, self.client.get_char_name(), msg), self.client)
 
