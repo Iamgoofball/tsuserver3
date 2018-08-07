@@ -185,7 +185,8 @@ class AOProtocol(asyncio.Protocol):
         ID#<pv:int>#<software:string>#<version:string>#%
 
         """
-
+        if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR):
+            return
         if len(args) < 2:
             return
 
@@ -201,7 +202,7 @@ class AOProtocol(asyncio.Protocol):
         self.client.version = version_list
         if args[0] != 'AO2':
             return
-        if self.client.version_checker(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
+        if self.client.check_version(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
             default_features = {'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption',
                                 'deskmod', 'evidence'}
             features = default_features.union(self.server.features)
@@ -316,7 +317,7 @@ class AOProtocol(asyncio.Protocol):
         except ClientError:
             return
 
-     def net_cmd_ms(self, args):
+    def net_cmd_ms(self, args):
         """ IC message.
 
         Refer to the implementation for details.

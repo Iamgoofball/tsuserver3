@@ -440,7 +440,7 @@ class ClientManager:
                 clients.append(client)
         return clients
 
-    def version_checker(self, req_release, req_major, req_minor, exact):
+    def check_version(self, req_release, req_major, req_minor, exact):
         if len(self.version) < 3:
             return 0
         if req_release:
