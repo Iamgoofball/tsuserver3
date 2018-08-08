@@ -185,7 +185,7 @@ class AOProtocol(asyncio.Protocol):
         ID#<pv:int>#<software:string>#<version:string>#%
 
         """
-        if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR):
+        if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR, needs_auth=False):
             return
         if len(args) < 2:
             return
@@ -198,16 +198,18 @@ class AOProtocol(asyncio.Protocol):
         release = int(version_list[0])
         major = int(version_list[1])
         minor = int(version_list[2])
+        self.client.version = [release, major, minor]
+        if self.client.playing_the_fucking_game and self.client.new_player:
+            self.client.new_player = False
+            logger.log_server('New Join|IP: {}|HD: {}|Client Version: {}.{}.{}'.format(self.client.get_ipreal(), self.client.hdid, self.client.version[0], self.client.version[1], self.client.version[2]))
+            if args[0] != 'AO2':
+                return
+            if self.client.check_version(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
+                default_features = {'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption',
+                                    'deskmod', 'evidence'}
+                features = default_features.union(self.server.features)
 
-        self.client.version = version_list
-        if args[0] != 'AO2':
-            return
-        if self.client.check_version(2, 2, 5, 0): # check if they're running 2.2.5 or higher before continuing
-            default_features = {'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption',
-                                'deskmod', 'evidence'}
-            features = default_features.union(self.server.features)
-
-            self.client.send_command('FL', *features)
+                self.client.send_command('FL', *features)
 
     def net_cmd_ch(self, _):
         """ Periodically checks the connection.
@@ -220,7 +222,7 @@ class AOProtocol(asyncio.Protocol):
         self.ping_timeout = asyncio.get_event_loop().call_later(self.server.config['timeout'], self.client.disconnect)
 
     def net_cmd_askchaa(self, _):
-        """ Ask for the counts of characters/evidence/music
+        """ Ask for the counts of characters/evidence/music. Also serves as "figure out if this client is actually fucking playing and not just window shopping"
 
         askchaa#%
 
@@ -228,6 +230,8 @@ class AOProtocol(asyncio.Protocol):
         char_cnt = len(self.server.char_list)
         evi_cnt = 0
         music_cnt = sum([len(x) for x in self.server.music_pages_ao1])
+        self.client.playing_the_fucking_game = True
+        self.client.send_command('ID', self.client.id, self.server.software, self.server.get_version_string())
         self.client.send_command('SI', char_cnt, evi_cnt, music_cnt)
 
     def net_cmd_askchar2(self, _):

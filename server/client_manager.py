@@ -58,6 +58,8 @@ class ClientManager:
             self.voting_at = 0
             self.is_checked = False
             self.websocket = None
+            self.playing_the_fucking_game = False
+            self.new_player = True
 
             # flood-guard stuff
             self.mus_counter = 0
@@ -377,6 +379,32 @@ class ClientManager:
                        '((status?))']
             return random.choice(message)
 
+        def check_version(self, req_release, req_major, req_minor, exact):
+            if len(self.version) < 3:
+                return 0
+            if req_release:
+                if exact:
+                    if self.version[0] != req_release:
+                        return 0
+                else:
+                    if self.version[0] < req_release:
+                        return 0
+                if req_major:
+                    if exact:
+                        if self.version[1] != req_major:
+                            return 0
+                    else:
+                        if self.version[1] < req_major:
+                            return 0
+                    if req_minor:
+                        if exact:
+                            if self.version[2] != req_minor:
+                                return 0
+                        else:
+                            if self.version[2] < req_minor:
+                                return 0
+            return 1
+            
     def __init__(self, server):
         self.clients = set()
         self.server = server
@@ -440,28 +468,4 @@ class ClientManager:
                 clients.append(client)
         return clients
 
-    def check_version(self, req_release, req_major, req_minor, exact):
-        if len(self.version) < 3:
-            return 0
-        if req_release:
-            if exact:
-                if self.version[0] != req_release:
-                    return 0
-            else:
-                if self.version[0] < req_release:
-                    return 0
-            if req_major:
-                if exact:
-                    if self.version[1] != req_major:
-                        return 0
-                else:
-                    if self.version[1] < req_major:
-                        return 0
-                if req_minor:
-                    if exact:
-                        if self.version[2] != req_minor:
-                            return 0
-                    else:
-                        if self.version[2] < req_minor:
-                            return 0
-        return 1
+
