@@ -58,7 +58,7 @@ class ClientManager:
             self.voting_at = 0
             self.is_checked = False
             self.websocket = None
-            self.playing_the_fucking_game = False
+            self.active_player = False
             self.new_player = True
 
             # flood-guard stuff

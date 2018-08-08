@@ -199,7 +199,7 @@ class AOProtocol(asyncio.Protocol):
         major = int(version_list[1])
         minor = int(version_list[2])
         self.client.version = [release, major, minor]
-        if self.client.playing_the_fucking_game and self.client.new_player:
+        if self.client.active_player and self.client.new_player:
             self.client.new_player = False
             logger.log_server('New Join|IP: {}|HD: {}|Client Version: {}.{}.{}'.format(self.client.get_ipreal(), self.client.hdid, self.client.version[0], self.client.version[1], self.client.version[2]))
             if args[0] != 'AO2':
@@ -222,7 +222,7 @@ class AOProtocol(asyncio.Protocol):
         self.ping_timeout = asyncio.get_event_loop().call_later(self.server.config['timeout'], self.client.disconnect)
 
     def net_cmd_askchaa(self, _):
-        """ Ask for the counts of characters/evidence/music. Also serves as "figure out if this client is actually fucking playing and not just window shopping"
+        """ Ask for the counts of characters/evidence/music, along with setting active_player on the client.
 
         askchaa#%
 
@@ -230,7 +230,7 @@ class AOProtocol(asyncio.Protocol):
         char_cnt = len(self.server.char_list)
         evi_cnt = 0
         music_cnt = sum([len(x) for x in self.server.music_pages_ao1])
-        self.client.playing_the_fucking_game = True
+        self.client.active_player = True
         self.client.send_command('ID', self.client.id, self.server.software, self.server.get_version_string())
         self.client.send_command('SI', char_cnt, evi_cnt, music_cnt)
 
