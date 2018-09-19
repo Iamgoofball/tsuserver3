@@ -64,6 +64,7 @@ class AOProtocol(asyncio.Protocol):
         buf = data
 
         if not self.client.is_checked and self.server.ban_manager.is_banned(self.client.ipid):
+            logger.log_server('Client connection terminated, banned IP/ID: {}.'.format(str(self.client.ipid)), self.client)
             self.client.transport.close()
         else:
             self.client.is_checked = True
